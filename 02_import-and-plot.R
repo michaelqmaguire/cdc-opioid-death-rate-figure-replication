@@ -39,6 +39,8 @@ cdc_tp <-
     ) %>%
   mutate(date_display = as.Date(paste0(year,"-","01","-","01")))
 
+write_csv(cdc_tp, "./data/clean/cdc-data-cleaned.csv")
+
 cdc_plot <-
 cdc_tp %>%
   ggplot() +
