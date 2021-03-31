@@ -62,8 +62,18 @@ cdc_plot <-
         ) +
       scale_color_manual(
         name = "",
-        labels = c("Any Opioid", "Common Opioids (e.g. Fentanyl, Tramadol)", "Heroin", "Synthetic Opioids (Natural & Semi-Synthetic Opioids and Methadone)"),
-        values = c("tan2", "dodgerblue2", "forestgreen", "grey20")
+        labels = c(
+          "Any Opioid",
+          "Common Opioids (e.g. Fentanyl, Tramadol)",
+          "Heroin",
+          "Synthetic Opioids (Natural & Semi-Synthetic Opioids and Methadone)"
+        ),
+        values = c(
+          "tan2",
+          "dodgerblue2",
+          "forestgreen",
+          "grey20"
+        )
       )
 
 png("./plots/cdc-opioid-death-rate-figure.png", res = 1200, height = 8, width = 12, units = "in")
