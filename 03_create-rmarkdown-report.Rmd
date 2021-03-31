@@ -1,0 +1,94 @@
+---
+title: "CDC Opioid Death Rate Figure Replication"
+author: "Michael Maguire, MS"
+date: "3/31/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libload, include = TRUE, message = FALSE}
+library(hrbrthemes)
+library(readr)
+library(tidyverse)
+library(tidylog)
+```
+
+## Read in CDC data set.
+
+```{r cdcload, include = TRUE}
+cdc <-
+  read_csv(
+    file = "./data/raw/cdc-opioid-death-rate-data.csv"
+  ) %>%
+  janitor::clean_names() %>%
+  rename(
+    synthetic_opioids = synthetic_opioid_analgesics_excluding_methadone_e_g_fentanyl_tramadol,
+    common_opioids = commonly_prescribed_opioids_natural_semi_synthetic_opioids_and_methadone
+  )
+
+## Show contents
+cdc
+```
+
+## Transpose CDC data set
+
+```{r cdctp, include = TRUE}
+cdc_tp <-
+  cdc %>%
+    pivot_longer(
+      data = .,
+      cols = !year,
+      names_to = "drug_type",
+      values_to = "death_rate"
+    ) %>%
+  # Have to create a fake date to make scale in plot recognize it as a date.
+  mutate(date_display = as.Date(paste0(year,"-","01","-","01")))
+
+cdc_tp
+```
+
+## Plot the transposed data set.
+
+```{r cdcplot, include = TRUE, fig.height = 8, fig.width = 12}
+cdc_plot <-
+cdc_tp %>%
+  ggplot() +
+    geom_line(aes(x = date_display, y = death_rate, color = drug_type), size = 1.25) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    scale_y_continuous(expand = c(0.01,0.01), breaks = seq(0, 15, by = 1)) +
+    theme_ipsum_rc(grid = FALSE) +
+    ggtitle("Overdose Death Rates Involving Opioids by Type, United States, 2000 - 2017") +
+    xlab("") +
+    ylab("") +
+    theme(
+      panel.background = element_rect(color = "grey20"),
+      axis.title.x = element_text(angle = 90, color = "black", size = 12),
+      axis.text.x = element_text(color = "black", size = 12),
+      axis.text.y = element_text(color = "black", size = 12),
+      legend.position = "bottom",
+      legend.background = element_rect(linetype = "solid"),
+      legend.text = element_text(size = 12)
+      ) +
+    scale_color_manual(
+      name = "",
+      labels = c(
+        "Any Opioid",
+        "Common Opioids (e.g. Fentanyl, Tramadol)",
+        "Heroin",
+        "Synthetic Opioids (Natural & Semi-Synthetic Opioids and Methadone)"
+      ),
+      values = c(
+        "tan2",
+        "dodgerblue2",
+        "forestgreen",
+        "grey20"
+      )
+    )
+
+# Show plot
+cdc_plot
+```
+
